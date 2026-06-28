@@ -84,6 +84,11 @@ def _load_judge(spec: str | None, enabled: bool) -> JudgeClient | None:
 
 
 def _load_cases(args, corpus: Corpus):
+    if not Path(args.data).exists():
+        raise SystemExit(
+            f"dataset not found at {args.data!r}. claimcheck ships its golden data "
+            f"in the repo, so run it from a clone, or pass --data PATH to your own cases."
+        )
     cases = load_dir(args.data)
     validate_against_corpus(cases, corpus)
     if getattr(args, "split", None):
