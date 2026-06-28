@@ -57,21 +57,29 @@ BUG_MARKERS = ("leakverdict", "phantomcite", "rubberstamp", "greenlight")
 # 0.30 so a paraphrase still matches the source.                               #
 # --------------------------------------------------------------------------- #
 _PCT = re.compile(r"(\d+(?:\.\d+)?)\s*(?:%|percent\b)", re.IGNORECASE)
-_DOLLAR = re.compile(r"(?:CA\$|US\$|USD|CAD|\$)\s*(\d+(?:\.\d+)?)", re.IGNORECASE)
+_DOLLAR = re.compile(r"(CA\$|US\$|USD|CAD|\$)\s*(\d+(?:\.\d+)?)", re.IGNORECASE)
 _CENTS = re.compile(r"(\d+(?:\.\d+)?)\s*(?:cents?|¢)", re.IGNORECASE)
 _NUM = re.compile(r"\d+(?:\.\d+)?")
 
+# Map a money prefix to an explicit currency, or None when it is ambiguous: a
+# bare "$" or "30 cents" could be either, so we do not assume one.
+_CURRENCY = {"ca$": "CAD", "cad": "CAD", "us$": "USD", "usd": "USD", "$": None}
 
-def extract_quantities(text: str) -> dict[str, set[float]]:
+
+def extract_quantities(text: str) -> dict[str, set]:
     """Return {"pct": {...}, "money": {...}, "num": {...}} found in ``text``.
 
-    Money is normalized to a single currency-agnostic magnitude (dollars), and
-    cents are folded in as fractional dollars, so "30 cents", "$0.30" and
-    "CA$0.30" all compare equal. Percent and money spans are removed before bare
-    numbers are read, so a value is never double-counted across kinds.
+    Percentages and bare numbers are sets of floats. Money is a set of
+    ``(currency, amount)`` pairs: the amount is normalized to dollars (cents fold
+    in as fractional dollars) and the currency is "USD", "CAD", or None when it
+    is not stated (a bare "$" or "30 cents"). Carrying the currency lets the
+    reviewer catch a US-dollar claim cited to a Canadian-dollar source, while an
+    unstated currency still matches either so an honest paraphrase is not
+    punished. Percent and money spans are removed before bare numbers are read,
+    so a value is never double-counted across kinds.
     """
     pcts: set[float] = set()
-    moneys: set[float] = set()
+    moneys: set[tuple[str | None, float]] = set()
     nums: set[float] = set()
 
     work = text or ""
@@ -80,11 +88,12 @@ def extract_quantities(text: str) -> dict[str, set[float]]:
     work = _PCT.sub(" ", work)
 
     for m in _DOLLAR.finditer(work):
-        moneys.add(round(float(m.group(1)), 4))
+        currency = _CURRENCY.get(m.group(1).lower())
+        moneys.add((currency, round(float(m.group(2)), 4)))
     work = _DOLLAR.sub(" ", work)
 
     for m in _CENTS.finditer(work):
-        moneys.add(round(float(m.group(1)) / 100.0, 4))
+        moneys.add((None, round(float(m.group(1)) / 100.0, 4)))
     work = _CENTS.sub(" ", work)
 
     for m in _NUM.finditer(work):
@@ -99,6 +108,22 @@ def _has_any(q: dict[str, set[float]]) -> bool:
 
 def _matched(value: float, candidates: set[float]) -> bool:
     return any(math.isclose(value, c, rel_tol=1e-9, abs_tol=0.005) for c in candidates)
+
+
+def _currency_compatible(a: str | None, b: str | None) -> bool:
+    """Two currencies are compatible if equal or at least one is unstated."""
+    return a is None or b is None or a == b
+
+
+def _money_matched(value: tuple[str | None, float], candidates: set) -> bool:
+    """A money value matches only when the amount is close AND the currency is
+    compatible, so US$0.30 does not match a source stating CA$0.30."""
+    cur, amount = value
+    return any(
+        math.isclose(amount, c_amount, rel_tol=1e-9, abs_tol=0.005)
+        and _currency_compatible(cur, c_cur)
+        for c_cur, c_amount in candidates
+    )
 
 
 # --------------------------------------------------------------------------- #
@@ -224,15 +249,21 @@ class ReferenceReviewer(ReviewerAdapter):
                 doc_q[kind] |= dq[kind]
 
         if _has_any(claim_q):
-            unmatched: list[tuple[str, float]] = []
-            conflict: tuple[str, float] | None = None
+            unmatched: list = []
+            conflict = None
             for kind, values in claim_q.items():
                 for value in values:
-                    if _matched(value, doc_q[kind]):
+                    hit = (
+                        _money_matched(value, doc_q[kind])
+                        if kind == "money"
+                        else _matched(value, doc_q[kind])
+                    )
+                    if hit:
                         continue
                     unmatched.append((kind, value))
                     # a conflict requires the source to state a DIFFERENT value
-                    # of the same kind (e.g. claim 1.9%, source 2.9%).
+                    # of the same kind (e.g. claim 1.9%, source 2.9%; or a US$
+                    # amount where the source states the same number in CA$).
                     if doc_q[kind]:
                         conflict = (kind, value)
             if not unmatched:
@@ -277,19 +308,21 @@ class ReferenceReviewer(ReviewerAdapter):
 
 
 # --------------------------------------------------------------------------- #
-# Splitting a piece of copy into atomic claims (for the live `review` command)  #
+# Splitting a piece of copy into claims, one per sentence (the live review path) #
 # --------------------------------------------------------------------------- #
 _SENT_SPLIT = re.compile(r"(?<=[.!?])\s+|\s*[;]\s+")
 _ALPHA = re.compile(r"[A-Za-z]+")
 
 
 def split_into_claims(copy: str) -> list[str]:
-    """Break a piece of marketing copy into atomic claim sentences.
+    """Split a piece of marketing copy into claim sentences, one per sentence.
 
     Deliberately simple and inspectable: split on sentence enders and
-    semicolons, keep fragments that carry at least a few words. A production
-    splitter would use a model; the point here is that review happens one atomic
-    claim at a time, which is what makes per-claim citation honest.
+    semicolons, keep fragments that carry at least a few words. This is
+    sentence-level, not true atomic-claim decomposition, so a compound sentence
+    is reviewed as one unit. A production splitter uses a model; the point here
+    is that review happens one sentence-level claim at a time, which is what
+    makes per-claim citation honest.
     """
     claims = []
     for raw in _SENT_SPLIT.split(copy or ""):

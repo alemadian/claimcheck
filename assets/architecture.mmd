@@ -4,7 +4,7 @@
 flowchart LR
     subgraph REVIEW["Review path: clear copy to publish"]
         direction TB
-        A[Marketing copy] --> B[Split into atomic claims]
+        A[Marketing copy] --> B["Split into claims (by sentence)"]
         B --> C[Retrieve from pinned corpus]
         C --> D["ReviewerAdapter<br/>(deterministic first pass or your model)"]
         D --> E{Verdict per claim}

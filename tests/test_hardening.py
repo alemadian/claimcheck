@@ -88,3 +88,19 @@ def test_decoy_caps_a_rubber_stamp_judge(corpus):
     # the cited passage ties the decoy under a rubber-stamp judge, so it must not
     # earn full citation-correctness credit.
     assert v.axes["citation_correctness"].score <= 1
+
+
+def test_currency_mismatch_is_not_published(corpus):
+    # US$0.30 must not be vouched for by a CA$0.30 source: same number, different
+    # money. A trust tool cannot wave a US-dollar fee through on a Canadian source.
+    reviewer = ReferenceReviewer(corpus)
+    out = reviewer.review_claim("Stripe charges 2.9% plus US$0.30 per successful card charge.")
+    assert out.verdict is not Verdict.SUPPORTED
+
+
+def test_unstated_currency_still_matches(corpus):
+    # the honest paraphrase "30 cents" (currency unstated) must still match the
+    # CA$0.30 source, so the currency guard does not punish a true claim.
+    reviewer = ReferenceReviewer(corpus)
+    out = reviewer.review_claim("Stripe charges 2.9% plus 30 cents per successful card charge.")
+    assert out.verdict is Verdict.SUPPORTED

@@ -14,8 +14,8 @@ def _case(claim, verdict="supported", gold=("d_aes",), cid="c"):
 def test_extract_quantities_normalizes_money_and_percent():
     q = extract_quantities("2.9% + 30 cents, capped at CA$5.00, AES-256")
     assert 2.9 in q["pct"]
-    assert 0.30 in q["money"]      # "30 cents" -> 0.30 dollars
-    assert 5.0 in q["money"]       # "CA$5.00" -> 5.00
+    assert (None, 0.30) in q["money"]    # "30 cents" -> 0.30, currency unstated
+    assert ("CAD", 5.0) in q["money"]    # "CA$5.00" -> 5.00 Canadian dollars
     assert 256 in q["num"]
 
 

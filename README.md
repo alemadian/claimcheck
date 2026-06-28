@@ -124,7 +124,7 @@ rather than waved through.
 
 ## How it scores: three layers, cheapest first
 
-The deterministic layer runs on every commit with no judge (`claimcheck run --no-judge`), so per-commit feedback is free and sub-second. The judge runs pre-merge and nightly. Cheapest and most deterministic first.
+The deterministic layer runs on every commit with no judge (`claimcheck run --no-judge`), so per-commit feedback is free and sub-second. The judge layer runs in CI on every push and on a nightly schedule with the bundled offline judge; a real model plugs in behind the same interface. Cheapest and most deterministic first.
 
 1. **Deterministic trust checks** (`claimcheck/deterministic.py`), no model,
    sub-second, on every commit:
@@ -141,8 +141,8 @@ The deterministic layer runs on every commit with no judge (`claimcheck run --no
    MRR and nDCG against the gold passages, isolated from the verdict step so a
    regression points at the right layer.
 
-3. **Model-as-judge** (`claimcheck/judges/`), versioned rubric, run nightly and
-   pre-merge: faithfulness (is the claim entailed by the cited passage) and
+3. **Model-as-judge** (`claimcheck/judges/`), versioned rubric, run in CI and
+   on a nightly schedule: faithfulness (is the claim entailed by the cited passage) and
    citation correctness (does the cited passage actually bear on this specific
    claim, beating the hardest decoy passage). The judge model id, temperature,
    seed and prompt version are pinned and recorded in every verdict.
@@ -166,7 +166,7 @@ judge, single run):
 | verdict_accuracy | 1.000 |
 | contradiction_recall | 1.000 |
 | abstention_recall | 1.000 |
-| retrieval_recall@k | 1.000 |
+| retrieval_recall_at_k | 1.000 |
 | rerank_mrr | 1.000 |
 | deterministic_pass_rate | 1.000 |
 | faithfulness_rate | 0.556 |
@@ -180,8 +180,8 @@ number-and-unit cases; it misses other cases by design, tracked in
 `data/known_gaps/` and in Known limitations below. `faithfulness_rate` and
 `citation_correctness` sit near 0.55 to 0.60 on purpose: the bundled judge is a
 content-overlap heuristic rather than a model, so the number is real and
-unrigged, and a production judge behind the same `JudgeClient` interface raises
-it. Reproduce with `claimcheck run`.
+unrigged, and a production judge can be swapped in behind the same `JudgeClient`
+interface and measured the same way. Reproduce with `claimcheck run`.
 
 ## The corpus is real and pinned
 
@@ -228,8 +228,10 @@ block):
   not drop beyond tolerance. No single previously-passing claim may regress, and
   any new claim added in the PR must pass.
 
-`examples/github-actions.yml` wires the gate into a pull request with the report
-posted as an artifact.
+The bundled `.github/workflows/ci.yml` gates every push and pull request against
+the committed `baseline.json`, and separately proves the gate has teeth by
+confirming it blocks a deliberately buggy reviewer. `examples/github-actions.yml`
+shows the same gate wired into a PR with the report posted as an artifact.
 
 ## The golden dataset
 
@@ -315,6 +317,11 @@ runnable cases in `data/known_gaps/` rather than quietly left out:
   historical uptime; "Stripe guarantees 99.999% uptime" reuses the number, so the
   first-pass reviewer wrongly supports it. Separating a past stat from a forward
   guarantee needs a model.
+- **A substituted subject.** "All bank account numbers are encrypted at rest with
+  AES-256" reuses the encryption wording and the number from the card-number
+  passage, so the first-pass reviewer wrongly supports it. Telling a swapped
+  subject apart from a valid synonym or plural paraphrase ("every card number"
+  vs "all card numbers") needs a model, not bag-of-words overlap.
 
 Run `claimcheck run --data data/known_gaps` to watch it miss them. That is the
 boundary: a model wired in behind the same `ReviewerAdapter` closes these, and
