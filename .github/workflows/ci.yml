@@ -5,9 +5,11 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  schedule:
+    - cron: "0 7 * * *"   # nightly: re-run the eval (with the judge) on a schedule
 
 jobs:
-  test:
+  eval:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,13 +21,26 @@ jobs:
       - name: unit tests
         run: pytest -q
 
-      - name: eval suite runs clean
-        run: claimcheck run
+      - name: regression gate vs committed baseline
+        # Gate the current code against the version-controlled green baseline.
+        # Any regression in the trust metrics (a rise in published_falsehood_rate
+        # or over_flag_rate, a drop in accuracy/recall/citation/faithfulness, or
+        # any previously-passing claim regressing) fails the build. Update the
+        # baseline deliberately with `claimcheck baseline --out ci-baseline.json`,
+        # which is then a reviewable diff.
+        run: claimcheck gate --baseline ci-baseline.json --report gate.md
 
-      - name: the gate catches a buggy reviewer
+      - name: upload gate report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-report
+          path: gate.md
+
+      - name: the gate has teeth (it blocks a deliberately buggy reviewer)
         run: |
-          claimcheck baseline --out /tmp/baseline.json
-          if claimcheck gate --data data/golden_buggy --baseline /tmp/baseline.json; then
+          claimcheck baseline --out /tmp/teeth-baseline.json
+          if claimcheck gate --data data/golden_buggy --baseline /tmp/teeth-baseline.json; then
             echo "ERROR: the gate should have blocked the buggy reviewer" && exit 1
           else
             echo "OK: the gate correctly blocked the buggy reviewer"

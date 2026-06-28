@@ -1,0 +1,493 @@
+{
+  "n_cases": 19,
+  "headline": {
+    "deterministic_pass_rate": 1.0,
+    "published_falsehood_rate": 0.0,
+    "verdict_accuracy": 1.0,
+    "contradiction_recall": 1.0,
+    "abstention_recall": 1.0,
+    "over_flag_rate": 0.0,
+    "faithfulness_rate": 0.5555555555555556,
+    "citation_correctness": 0.6,
+    "retrieval_recall_at_k": 1.0,
+    "rerank_mrr": 1.0
+  },
+  "slices": {
+    "adversarial:near_miss": {
+      "n": 2,
+      "deterministic_pass_rate": 1.0,
+      "verdict_accuracy": 1.0,
+      "published_falsehood_rate": 0.0,
+      "citation_correctness": null,
+      "retrieval_recall_at_k": null
+    },
+    "adversarial:out_of_corpus": {
+      "n": 2,
+      "deterministic_pass_rate": 1.0,
+      "verdict_accuracy": 1.0,
+      "published_falsehood_rate": 0.0,
+      "citation_correctness": null,
+      "retrieval_recall_at_k": null
+    },
+    "claim_type:compliance": {
+      "n": 1,
+      "deterministic_pass_rate": 1.0,
+      "verdict_accuracy": 1.0,
+      "published_falsehood_rate": 0.0,
+      "citation_correctness": null,
+      "retrieval_recall_at_k": null
+    },
+    "claim_type:pricing": {
+      "n": 9,
+      "deterministic_pass_rate": 1.0,
+      "verdict_accuracy": 1.0,
+      "published_falsehood_rate": 0.0,
+      "citation_correctness": 0.42857142857142855,
+      "retrieval_recall_at_k": 1.0
+    },
+    "claim_type:reach": {
+      "n": 2,
+      "deterministic_pass_rate": 1.0,
+      "verdict_accuracy": 1.0,
+      "published_falsehood_rate": 0.0,
+      "citation_correctness": 1.0,
+      "retrieval_recall_at_k": 1.0
+    },
+    "claim_type:reliability": {
+      "n": 1,
+      "deterministic_pass_rate": 1.0,
+      "verdict_accuracy": 1.0,
+      "published_falsehood_rate": 0.0,
+      "citation_correctness": 1.0,
+      "retrieval_recall_at_k": 1.0
+    },
+    "claim_type:security": {
+      "n": 6,
+      "deterministic_pass_rate": 1.0,
+      "verdict_accuracy": 1.0,
+      "published_falsehood_rate": 0.0,
+      "citation_correctness": 0.6,
+      "retrieval_recall_at_k": 1.0
+    },
+    "gold_verdict:contradicted": {
+      "n": 6,
+      "deterministic_pass_rate": 1.0,
+      "verdict_accuracy": 1.0,
+      "published_falsehood_rate": 0.0,
+      "citation_correctness": 0.5,
+      "retrieval_recall_at_k": 1.0
+    },
+    "gold_verdict:supported": {
+      "n": 9,
+      "deterministic_pass_rate": 1.0,
+      "verdict_accuracy": 1.0,
+      "published_falsehood_rate": 0.0,
+      "citation_correctness": 0.6666666666666666,
+      "retrieval_recall_at_k": 1.0
+    },
+    "gold_verdict:unsupported": {
+      "n": 4,
+      "deterministic_pass_rate": 1.0,
+      "verdict_accuracy": 1.0,
+      "published_falsehood_rate": 0.0,
+      "citation_correctness": null,
+      "retrieval_recall_at_k": null
+    },
+    "split:frozen": {
+      "n": 15,
+      "deterministic_pass_rate": 1.0,
+      "verdict_accuracy": 1.0,
+      "published_falsehood_rate": 0.0,
+      "citation_correctness": 0.6666666666666666,
+      "retrieval_recall_at_k": 1.0
+    },
+    "split:living": {
+      "n": 4,
+      "deterministic_pass_rate": 1.0,
+      "verdict_accuracy": 1.0,
+      "published_falsehood_rate": 0.0,
+      "citation_correctness": 0.3333333333333333,
+      "retrieval_recall_at_k": 1.0
+    }
+  },
+  "per_case": [
+    {
+      "id": "pricing-supported-rate",
+      "split": "frozen",
+      "gold_verdict": "supported",
+      "predicted_verdict": "supported",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 2,
+          "justification": "weakest of 1 citation pair(s)"
+        },
+        "faithfulness": {
+          "score": 2,
+          "justification": "claim/passage content overlap 0.54"
+        }
+      }
+    },
+    {
+      "id": "pricing-supported-nofees",
+      "split": "frozen",
+      "gold_verdict": "supported",
+      "predicted_verdict": "supported",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 1,
+          "justification": "weakest of 1 citation pair(s)"
+        },
+        "faithfulness": {
+          "score": 1,
+          "justification": "claim/passage content overlap 0.38"
+        }
+      }
+    },
+    {
+      "id": "security-supported-aes",
+      "split": "frozen",
+      "gold_verdict": "supported",
+      "predicted_verdict": "supported",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 2,
+          "justification": "weakest of 1 citation pair(s)"
+        },
+        "faithfulness": {
+          "score": 2,
+          "justification": "claim/passage content overlap 0.62"
+        }
+      }
+    },
+    {
+      "id": "security-supported-pci",
+      "split": "frozen",
+      "gold_verdict": "supported",
+      "predicted_verdict": "supported",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 2,
+          "justification": "weakest of 1 citation pair(s)"
+        },
+        "faithfulness": {
+          "score": 1,
+          "justification": "claim/passage content overlap 0.46"
+        }
+      }
+    },
+    {
+      "id": "security-supported-soc",
+      "split": "frozen",
+      "gold_verdict": "supported",
+      "predicted_verdict": "supported",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 1,
+          "justification": "weakest of 1 citation pair(s)"
+        },
+        "faithfulness": {
+          "score": 1,
+          "justification": "claim/passage content overlap 0.36"
+        }
+      }
+    },
+    {
+      "id": "reach-supported-methods",
+      "split": "frozen",
+      "gold_verdict": "supported",
+      "predicted_verdict": "supported",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 2,
+          "justification": "weakest of 1 citation pair(s)"
+        },
+        "faithfulness": {
+          "score": 2,
+          "justification": "claim/passage content overlap 0.57"
+        }
+      }
+    },
+    {
+      "id": "reach-supported-countries",
+      "split": "frozen",
+      "gold_verdict": "supported",
+      "predicted_verdict": "supported",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 2,
+          "justification": "weakest of 1 citation pair(s)"
+        },
+        "faithfulness": {
+          "score": 2,
+          "justification": "claim/passage content overlap 1.00"
+        }
+      }
+    },
+    {
+      "id": "reliability-supported-uptime",
+      "split": "frozen",
+      "gold_verdict": "supported",
+      "predicted_verdict": "supported",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 2,
+          "justification": "weakest of 1 citation pair(s)"
+        },
+        "faithfulness": {
+          "score": 2,
+          "justification": "claim/passage content overlap 0.71"
+        }
+      }
+    },
+    {
+      "id": "pricing-contradicted-rate",
+      "split": "frozen",
+      "gold_verdict": "contradicted",
+      "predicted_verdict": "contradicted",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 1,
+          "justification": "weakest of 1 citation pair(s)"
+        }
+      }
+    },
+    {
+      "id": "pricing-contradicted-intl",
+      "split": "frozen",
+      "gold_verdict": "contradicted",
+      "predicted_verdict": "contradicted",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 1,
+          "justification": "weakest of 1 citation pair(s)"
+        }
+      }
+    },
+    {
+      "id": "pricing-contradicted-dispute",
+      "split": "frozen",
+      "gold_verdict": "contradicted",
+      "predicted_verdict": "contradicted",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 2,
+          "justification": "weakest of 1 citation pair(s)"
+        }
+      }
+    },
+    {
+      "id": "security-contradicted-aes",
+      "split": "frozen",
+      "gold_verdict": "contradicted",
+      "predicted_verdict": "contradicted",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 2,
+          "justification": "weakest of 1 citation pair(s)"
+        }
+      }
+    },
+    {
+      "id": "compliance-unsupported-insurance",
+      "split": "frozen",
+      "gold_verdict": "unsupported",
+      "predicted_verdict": "unsupported",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": true,
+      "retrieval_recall_at_k": 1.0,
+      "error": null
+    },
+    {
+      "id": "security-unsupported-mostsecure",
+      "split": "frozen",
+      "gold_verdict": "unsupported",
+      "predicted_verdict": "unsupported",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": true,
+      "retrieval_recall_at_k": 1.0,
+      "error": null
+    },
+    {
+      "id": "pricing-unsupported-volume",
+      "split": "frozen",
+      "gold_verdict": "unsupported",
+      "predicted_verdict": "unsupported",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": true,
+      "retrieval_recall_at_k": 1.0,
+      "error": null
+    },
+    {
+      "id": "pricing-contradicted-ach",
+      "split": "living",
+      "gold_verdict": "contradicted",
+      "predicted_verdict": "contradicted",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 2,
+          "justification": "weakest of 1 citation pair(s)"
+        }
+      }
+    },
+    {
+      "id": "security-contradicted-tls",
+      "split": "living",
+      "gold_verdict": "contradicted",
+      "predicted_verdict": "contradicted",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 1,
+          "justification": "weakest of 1 citation pair(s)"
+        }
+      }
+    },
+    {
+      "id": "pricing-supported-disputerefund",
+      "split": "living",
+      "gold_verdict": "supported",
+      "predicted_verdict": "supported",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": false,
+      "retrieval_recall_at_k": 1.0,
+      "error": null,
+      "judge": {
+        "citation_correctness": {
+          "score": 1,
+          "justification": "weakest of 1 citation pair(s)"
+        },
+        "faithfulness": {
+          "score": 1,
+          "justification": "claim/passage content overlap 0.33"
+        }
+      }
+    },
+    {
+      "id": "pricing-unsupported-disputewaiver",
+      "split": "living",
+      "gold_verdict": "unsupported",
+      "predicted_verdict": "unsupported",
+      "verdict_correct": true,
+      "published_falsehood": false,
+      "deterministic_passed": true,
+      "failed_checks": [],
+      "abstained": true,
+      "retrieval_recall_at_k": 1.0,
+      "error": null
+    }
+  ],
+  "judge_used": true,
+  "judge_config": {
+    "judge_model_id": "fake-judge-v1",
+    "prompt_fingerprint": "c9f42b1d26fcf6ab"
+  }
+}

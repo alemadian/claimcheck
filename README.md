@@ -229,9 +229,11 @@ block):
   any new claim added in the PR must pass.
 
 The bundled `.github/workflows/ci.yml` gates every push and pull request against
-the committed `baseline.json`, and separately proves the gate has teeth by
-confirming it blocks a deliberately buggy reviewer. `examples/github-actions.yml`
-shows the same gate wired into a PR with the report posted as an artifact.
+the committed `ci-baseline.json` (and re-runs nightly), and separately proves the
+gate has teeth by confirming it blocks a deliberately buggy reviewer. Update the
+baseline deliberately with `claimcheck baseline --out ci-baseline.json`, which is
+then a reviewable diff. `examples/github-actions.yml` shows the same gate wired
+into a PR with the report posted as an artifact.
 
 ## The golden dataset
 
