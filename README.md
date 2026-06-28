@@ -58,6 +58,40 @@ VERDICT: HOLD - 2 of 4 claim(s) are not cleared to publish:
   - [unsupported] Stripe guarantees your funds are insured up to one million dollars.
 ```
 
+## How it works
+
+Two paths share one trust layer. The review path clears a piece of copy to
+publish; the evaluation path and CI gate keep the reviewer honest over time. The
+same `ReviewerAdapter` and the same scoring run in both, so when you swap the
+deterministic first pass for your own model, the gate measures the upgrade on
+identical terms.
+
+```mermaid
+flowchart LR
+    subgraph REVIEW["Review path: clear copy to publish"]
+        direction TB
+        A[Marketing copy] --> B[Split into atomic claims]
+        B --> C[Retrieve from pinned corpus]
+        C --> D["ReviewerAdapter<br/>(deterministic first pass or your model)"]
+        D --> E{Verdict per claim}
+        E --> F["SUPPORTED, with citation"]
+        E --> G["CONTRADICTED, with citation"]
+        E --> H["UNSUPPORTED, abstain"]
+        F --> I{{PUBLISH or HOLD}}
+        G --> I
+        H --> I
+    end
+    subgraph EVAL["Evaluation and CI gate: prove it stays honest"]
+        direction TB
+        J["Golden cases (frozen + living)"] --> K["Score in 3 layers:<br/>deterministic, retrieval, model-as-judge"]
+        K --> L["published_falsehood_rate<br/>and over_flag_rate"]
+        L --> M{CI gate}
+        M --> N[Merge allowed]
+        M --> O[Merge blocked]
+    end
+    D -. "same adapter and scoring" .-> K
+```
+
 ## Why this exists
 
 The blocker to letting AI draft or review marketing content is not fluency, it
