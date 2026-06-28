@@ -1,10 +1,13 @@
 # claimcheck
 
-A marketing claims-review agent with a cite-or-abstain trust layer, and the
-evaluation harness that scores it. It checks a piece of marketing copy against a
-pinned corpus of real, public source-of-truth documents (here: Stripe pricing
-and security docs), and for every claim it returns one of three verdicts with a
-citation to the exact passage it relied on:
+![claimcheck social preview](assets/social-preview.png)
+
+A proof-of-work repo for AI-assisted marketing review: a claims-review agent
+with a cite-or-abstain trust layer, plus the evaluation harness and CI gate that
+score it. It checks a piece of marketing copy against a pinned corpus of real,
+public source-of-truth documents (here: Stripe pricing and security docs), and
+for every claim it returns one of three verdicts with a citation to the exact
+passage it relied on:
 
 - **SUPPORTED** the source backs the claim. Cite the passage.
 - **CONTRADICTED** the source conflicts with the claim. Cite the passage.
@@ -12,6 +15,14 @@ citation to the exact passage it relied on:
   and flags it for a human instead of vouching for it.
 
 A piece of copy is only cleared to publish when every claim is SUPPORTED.
+
+## At a glance
+
+- **Surface:** marketing claims review on public Stripe pricing and security docs.
+- **Trust rule:** cite the source when a claim is supported, contradict it when the source says otherwise, and abstain when nothing grounds it.
+- **Eval layer:** golden cases, deterministic trust checks, retrieval metrics, judge calibration, drift tracking, and a CI gate.
+- **Headline metric:** published_falsehood_rate, the share of cleared claims the source does not support.
+- **Honesty boundary:** the bundled reviewer is a deterministic first pass, and its known misses are tracked in `data/known_gaps/` instead of hidden.
 
 ## What it looks like
 
@@ -166,7 +177,7 @@ temperature 0 with a fixed seed, return the JSON verdict, and pass
 `claimcheck/gating.py` implements a layered merge gate (`gate` exits non-zero on
 block):
 
-- **Tier 1 (hard):** every deterministic trust check must be 100 percent green.
+- **Tier 1 (hard):** every deterministic trust check must be 100% green.
   Any failure blocks the merge, full stop.
 - **Tier 2 (delta vs baseline):** published_falsehood_rate and over_flag_rate may
   not rise beyond tolerance, and verdict accuracy, contradiction recall,
