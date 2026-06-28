@@ -154,6 +154,35 @@ support. A trustworthy reviewer keeps it at zero. It is reported next to
 directions are visible at once. Verdict accuracy, contradiction recall (did it
 catch the wrong prices) and abstention recall round it out.
 
+## Results on the golden set
+
+Latest `claimcheck run` over the pinned golden set (19 cases, bundled offline
+judge, single run):
+
+| Metric | Value |
+| --- | --- |
+| published_falsehood_rate | 0.000 |
+| over_flag_rate | 0.000 |
+| verdict_accuracy | 1.000 |
+| contradiction_recall | 1.000 |
+| abstention_recall | 1.000 |
+| retrieval_recall@k | 1.000 |
+| rerank_mrr | 1.000 |
+| deterministic_pass_rate | 1.000 |
+| faithfulness_rate | 0.556 |
+| citation_correctness | 0.600 |
+
+These are in-distribution numbers on the pinned golden set, not a generalization
+claim. The headline, `published_falsehood_rate` at 0.000, means nothing the
+reviewer cleared was unsupported by its cited source. Verdict accuracy and the
+recalls sit at 1.000 because the bundled reviewer is built for exactly these
+number-and-unit cases; it misses other cases by design, tracked in
+`data/known_gaps/` and in Known limitations below. `faithfulness_rate` and
+`citation_correctness` sit near 0.55 to 0.60 on purpose: the bundled judge is a
+content-overlap heuristic rather than a model, so the number is real and
+unrigged, and a production judge behind the same `JudgeClient` interface raises
+it. Reproduce with `claimcheck run`.
+
 ## The corpus is real and pinned
 
 `corpus/stripe_docs.jsonl` is real, public Stripe content (Canada pricing and
@@ -237,6 +266,18 @@ data/              golden cases, the buggy set, calibration labels
 examples/          real-reviewer + real-judge skeletons, CI workflow
 tests/             pytest suite covering every layer
 ```
+
+## What this is not
+
+- Not a source of truth. It grades a claim against a corpus you pin and control,
+  it does not certify that the corpus matches the world. The verdicts are only as
+  good as the corpus you curate.
+- Not an oracle. A SUPPORTED verdict is evidence-backed decision support, not a
+  guarantee, and every HOLD routes to a human.
+- Not corpus- or model-agnostic. Swap the corpus or the reviewer and the results
+  change, which is why the harness pins both and re-scores every change.
+- Not a security boundary. It does not defend against adversarial instructions
+  hidden inside the copy under review. Treat untrusted input as untrusted.
 
 ## Honest design notes
 
