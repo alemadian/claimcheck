@@ -1,5 +1,7 @@
 # claimcheck
 
+[![CI](https://github.com/alemadian/claimcheck/actions/workflows/ci.yml/badge.svg)](https://github.com/alemadian/claimcheck/actions/workflows/ci.yml)
+
 ![claimcheck social preview](assets/social-preview.png)
 
 A proof-of-work repo for AI-assisted marketing review: a claims-review agent

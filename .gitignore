@@ -6,3 +6,6 @@ baseline.json
 *.scoreboard.json
 history.jsonl
 gate.md
+*.egg-info/
+dist/
+build/

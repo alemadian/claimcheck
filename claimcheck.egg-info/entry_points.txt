@@ -1,2 +1,0 @@
-[console_scripts]
-claimcheck = claimcheck.cli:main
