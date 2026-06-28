@@ -1,0 +1,26 @@
+%% Source for assets/architecture.png (rendered with mermaid, theme: neutral).
+%% Two paths share one trust layer: the review path clears copy to publish,
+%% and the evaluation path plus CI gate keep the reviewer honest over time.
+flowchart LR
+    subgraph REVIEW["Review path: clear copy to publish"]
+        direction TB
+        A[Marketing copy] --> B[Split into atomic claims]
+        B --> C[Retrieve from pinned corpus]
+        C --> D["ReviewerAdapter<br/>(deterministic first pass or your model)"]
+        D --> E{Verdict per claim}
+        E --> F["SUPPORTED, with citation"]
+        E --> G["CONTRADICTED, with citation"]
+        E --> H["UNSUPPORTED, abstain"]
+        F --> I{{PUBLISH or HOLD}}
+        G --> I
+        H --> I
+    end
+    subgraph EVAL["Evaluation and CI gate: prove it stays honest"]
+        direction TB
+        J["Golden cases (frozen + living)"] --> K["Score in 3 layers:<br/>deterministic, retrieval, model-as-judge"]
+        K --> L["published_falsehood_rate<br/>and over_flag_rate"]
+        L --> M{CI gate}
+        M --> N[Merge allowed]
+        M --> O[Merge blocked]
+    end
+    D -. "same adapter and scoring" .-> K
