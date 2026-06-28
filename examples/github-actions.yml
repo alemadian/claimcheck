@@ -1,9 +1,11 @@
 # CI gate for the claims-review agent. Drop this in .github/workflows/.
 #
-# The deterministic trust checks run on every commit (free, sub-second). The
-# judge runs pre-merge. The gate compares the PR against the last green baseline
-# from main and blocks if the published-falsehood rate rises, if any trust check
-# fails, or if a previously-passing claim regresses.
+# The deterministic trust checks and the judge run via the eval suite. The gate
+# compares the current code against the committed ci-baseline.json (the last
+# green baseline, version-controlled and updated as a reviewable diff) and blocks
+# if the published-falsehood rate rises, if any trust check fails, or if a
+# previously-passing claim regresses. This mirrors the repo's own
+# .github/workflows/ci.yml.
 name: claims-review-gate
 
 on:
@@ -24,15 +26,11 @@ jobs:
       - name: tests
         run: pytest -q
 
-      # In real use, restore baseline.json produced on the last green main
-      # commit (cache or artifact). Here we generate it inline for the demo.
-      - name: baseline (restore from main in real use)
-        run: claimcheck baseline --out baseline.json
-
-      # The gate. Exits non-zero -> the PR is blocked. The markdown report is
-      # posted as a build artifact / PR comment.
+      # The gate. Compares the PR against the committed green baseline and exits
+      # non-zero to block. Update the baseline deliberately with
+      # `claimcheck baseline --out ci-baseline.json` (a reviewable diff).
       - name: gate
-        run: claimcheck gate --baseline baseline.json --report gate.md
+        run: claimcheck gate --baseline ci-baseline.json --report gate.md
 
       - name: upload report
         if: always()

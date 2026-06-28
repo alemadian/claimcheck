@@ -1,7 +1,7 @@
 {
-  "about": "Provenance for corpus/stripe_docs.jsonl. Each passage pins its source URL, capture date, and the SHA-256 of the exact captured text, so any change to the source of truth is a visible, reviewable diff and nothing in the corpus is unverifiable.",
+  "about": "Provenance for corpus/stripe_docs.jsonl. Each passage is a faithful, sourced statement of what the public page below asserts (lightly normalized, not always verbatim). This manifest pins its source URL, capture date, and the SHA-256 of the stored text, so every passage is traceable and any change to the corpus is a reviewable diff.",
   "captured_on": "2026-06-28",
-  "method": "Captured by hand from the public Stripe pages below on the capture date. To re-verify a passage, fetch its source_url and confirm the quoted text still appears; to update it, replace the text and its sha256 in the same reviewable commit.",
+  "method": "Captured by hand from the public Stripe pages on the capture date. To re-verify a passage, open its source_url and confirm the page still asserts it; to update, change the text and its sha256 in the same reviewable commit.",
   "documents": [
     {
       "id": "d_card_rate",

@@ -190,8 +190,10 @@ the security docs), captured 2026-06-28. Every passage records the URL it came
 from and the date it was captured, so anyone can re-verify it and a change to
 the source of truth is a visible, reviewable diff. Nothing in the corpus is
 invented, and `corpus/manifest.json` pins each passage's source URL, capture
-date, and the SHA-256 of its exact text, so any drift from the live source shows
-up as a reviewable diff.
+date, and the SHA-256 of its stored text, so every passage is traceable to its
+source and any change to the corpus is a reviewable diff. The stored passages are
+faithful statements of what each page asserts, lightly normalized rather than
+always verbatim.
 
 It is deliberately a small curated excerpt, not all of Stripe. The tool checks a
 claim against this pinned snapshot, which is the point: you pin your source of

@@ -104,3 +104,22 @@ def test_unstated_currency_still_matches(corpus):
     reviewer = ReferenceReviewer(corpus)
     out = reviewer.review_claim("Stripe charges 2.9% plus 30 cents per successful card charge.")
     assert out.verdict is Verdict.SUPPORTED
+
+
+def test_corpus_manifest_stays_in_sync():
+    # the provenance manifest must not drift from the corpus it documents: same
+    # ids, same source urls, and a sha256 that matches the stored text.
+    import hashlib
+    from tests.conftest import ROOT
+    corpus = {}
+    for line in (ROOT / "corpus" / "stripe_docs.jsonl").read_text().splitlines():
+        if line.strip():
+            d = json.loads(line)
+            corpus[d["id"]] = d
+    manifest = json.loads((ROOT / "corpus" / "manifest.json").read_text())
+    entries = {e["id"]: e for e in manifest["documents"]}
+    assert set(entries) == set(corpus), "manifest ids drifted from the corpus"
+    for cid, doc in corpus.items():
+        e = entries[cid]
+        assert e["source_url"] == doc["source_url"], f"{cid}: source_url drift"
+        assert e["sha256"] == hashlib.sha256(doc["text"].encode("utf-8")).hexdigest(), f"{cid}: sha256 drift"

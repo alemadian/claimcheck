@@ -4,7 +4,8 @@ layer, and the evaluation harness that scores it.
 
 The system under test (SUT) is a *content-review agent*. Given a piece of
 marketing copy, it:
-  - breaks the copy into atomic factual claims,
+  - splits the copy into claim sentences (one per sentence; true atomic-claim
+    decomposition is a documented next step, not what the bundled splitter does),
   - checks each claim against a pinned corpus of real, public source-of-truth
     documents (here: public Stripe pricing and security docs),
   - returns one of three verdicts per claim with a citation to the exact
@@ -26,7 +27,7 @@ first, so a build fails fast before any model-judge spend:
        fail-closed on ungroundable claims.
   2. Retrieval evaluation (recall@k / MRR / nDCG against the gold passages).
   3. Model-as-judge (faithfulness + citation correctness, versioned rubric,
-     run nightly + pre-merge).
+     run in CI and on a nightly schedule).
 
 Plus the metric that actually matters to a marketing org: the
 *published-falsehood rate* (how often the agent vouches for a claim the source
