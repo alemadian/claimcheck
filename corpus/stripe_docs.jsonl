@@ -11,5 +11,5 @@
 {"id": "d_tls", "doc_type": "security", "source_url": "https://docs.stripe.com/security", "captured_on": "2026-06-28", "text": "Stripe requires at least TLS 1.2 and automatically blocks requests that use older, less secure versions of TLS."}
 {"id": "d_soc", "doc_type": "security", "source_url": "https://docs.stripe.com/security", "captured_on": "2026-06-28", "text": "Stripe produces SOC 1, SOC 2 Type II, and SOC 3 reports annually."}
 {"id": "d_mtls", "doc_type": "security", "source_url": "https://docs.stripe.com/security", "captured_on": "2026-06-28", "text": "All Stripe internal server-to-server communication is encrypted using mutual TLS (mTLS)."}
-{"id": "d_methods", "doc_type": "global", "source_url": "https://stripe.com/global", "captured_on": "2026-06-28", "text": "Stripe gives businesses access to 100+ payment methods."}
+{"id": "d_methods", "doc_type": "global", "source_url": "https://stripe.com/en-ca/payments", "captured_on": "2026-06-28", "text": "Stripe gives businesses access to 100+ payment methods."}
 {"id": "d_countries", "doc_type": "global", "source_url": "https://stripe.com/en-ca/pricing", "captured_on": "2026-06-28", "text": "Stripe is available in 195 countries."}

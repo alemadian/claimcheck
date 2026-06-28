@@ -1,0 +1,127 @@
+{
+  "about": "Provenance for corpus/stripe_docs.jsonl. Each passage pins its source URL, capture date, and the SHA-256 of the exact captured text, so any change to the source of truth is a visible, reviewable diff and nothing in the corpus is unverifiable.",
+  "captured_on": "2026-06-28",
+  "method": "Captured by hand from the public Stripe pages below on the capture date. To re-verify a passage, fetch its source_url and confirm the quoted text still appears; to update it, replace the text and its sha256 in the same reviewable commit.",
+  "documents": [
+    {
+      "id": "d_card_rate",
+      "doc_type": "pricing",
+      "source_url": "https://stripe.com/en-ca/pricing",
+      "captured_on": "2026-06-28",
+      "sha256": "b43a350c35496f91842d8b3ad4e8feb4b3c3e3ab4e2d206d74083ff2395c65d1",
+      "text": "For online domestic card payments, Stripe charges 2.9% + CA$0.30 per successful card charge."
+    },
+    {
+      "id": "d_no_fees",
+      "doc_type": "pricing",
+      "source_url": "https://stripe.com/en-ca/pricing",
+      "captured_on": "2026-06-28",
+      "sha256": "99c6ea82057850ca3bcf4c0441ee18a94b28709bba79066de64463c93ca02b12",
+      "text": "Stripe does not charge setup fees, monthly fees, or any other hidden fees."
+    },
+    {
+      "id": "d_intl",
+      "doc_type": "pricing",
+      "source_url": "https://stripe.com/en-ca/pricing",
+      "captured_on": "2026-06-28",
+      "sha256": "a1a265f6691a9002b1c053e7e03454d015372bb8e04380f6f3bc9936853af9c6",
+      "text": "Cards issued outside Canada are charged an additional 0.8% on each successful card charge."
+    },
+    {
+      "id": "d_fx",
+      "doc_type": "pricing",
+      "source_url": "https://stripe.com/en-ca/pricing",
+      "captured_on": "2026-06-28",
+      "sha256": "0bb63aaf607b52ea9550dfe4c50dd7d1c984129684f25fead5a48c0ee7e595e5",
+      "text": "An additional 2% fee applies when currency conversion is required on a charge."
+    },
+    {
+      "id": "d_ach",
+      "doc_type": "pricing",
+      "source_url": "https://stripe.com/en-ca/pricing",
+      "captured_on": "2026-06-28",
+      "sha256": "ae4e90d54da496f591a7d75630b0a2270605771ab93d0de8c9e64df2ced33ab0",
+      "text": "Pre-authorized debit (ACH) payments are charged 1% + CA$0.40 per transaction, capped at CA$5.00 per transaction."
+    },
+    {
+      "id": "d_dispute",
+      "doc_type": "pricing",
+      "source_url": "https://stripe.com/en-ca/pricing",
+      "captured_on": "2026-06-28",
+      "sha256": "4812970f4cac8627ef6c14c3b6bbf6efef526738eafa5e5ad454dea5f297626b",
+      "text": "Stripe charges a CA$15.00 dispute fee for each dispute received. If you win the dispute, the fee is returned; if you lose, the fee is not returned."
+    },
+    {
+      "id": "d_instant_payout",
+      "doc_type": "pricing",
+      "source_url": "https://stripe.com/en-ca/pricing",
+      "captured_on": "2026-06-28",
+      "sha256": "0716fbcce5895fa37f3cdfb67c7e3f5692afdfdfc0c37bd9e536337132d9fffe",
+      "text": "Instant Payouts cost 1% of the payout volume, with a minimum fee of CA$0.60 per payout."
+    },
+    {
+      "id": "d_uptime",
+      "doc_type": "reliability",
+      "source_url": "https://stripe.com/en-ca/pricing",
+      "captured_on": "2026-06-28",
+      "sha256": "58a8bcde5afde31c2fa4c6866063fd92acc5e7e1a0a47c53c9336a0150077a5f",
+      "text": "Stripe has 99.999% average historical uptime."
+    },
+    {
+      "id": "d_pci",
+      "doc_type": "security",
+      "source_url": "https://docs.stripe.com/security",
+      "captured_on": "2026-06-28",
+      "sha256": "588fde5e1c6889864f22986f93b1bbe23d1ddf6313053809be508f83b29fb166",
+      "text": "Stripe is certified to PCI Service Provider Level 1, the most stringent level of certification available in the payments industry."
+    },
+    {
+      "id": "d_aes",
+      "doc_type": "security",
+      "source_url": "https://docs.stripe.com/security",
+      "captured_on": "2026-06-28",
+      "sha256": "642b70cafc10b8f62fb6b7a2129acbb692994487ee77cc8fa2edb30b11c154db",
+      "text": "All card numbers are encrypted at rest with AES-256."
+    },
+    {
+      "id": "d_tls",
+      "doc_type": "security",
+      "source_url": "https://docs.stripe.com/security",
+      "captured_on": "2026-06-28",
+      "sha256": "9a3950eadce97e0eeb1bdbfeb642f0873417db4d1bebc1d27e7e99e3d3d0f418",
+      "text": "Stripe requires at least TLS 1.2 and automatically blocks requests that use older, less secure versions of TLS."
+    },
+    {
+      "id": "d_soc",
+      "doc_type": "security",
+      "source_url": "https://docs.stripe.com/security",
+      "captured_on": "2026-06-28",
+      "sha256": "06f9c9b2d5269f99c4e594f87005276e1c0cc595bc353dea121f619434e4d14b",
+      "text": "Stripe produces SOC 1, SOC 2 Type II, and SOC 3 reports annually."
+    },
+    {
+      "id": "d_mtls",
+      "doc_type": "security",
+      "source_url": "https://docs.stripe.com/security",
+      "captured_on": "2026-06-28",
+      "sha256": "47b8aff223c4ab7fa8e6cf474c553d278d58593887fc83a1be6073b3a93aa53b",
+      "text": "All Stripe internal server-to-server communication is encrypted using mutual TLS (mTLS)."
+    },
+    {
+      "id": "d_methods",
+      "doc_type": "global",
+      "source_url": "https://stripe.com/en-ca/payments",
+      "captured_on": "2026-06-28",
+      "sha256": "cff25786449d7232fd80d6c2f8297babfd47923bf96c9fb72094a534ab9b7848",
+      "text": "Stripe gives businesses access to 100+ payment methods."
+    },
+    {
+      "id": "d_countries",
+      "doc_type": "global",
+      "source_url": "https://stripe.com/en-ca/pricing",
+      "captured_on": "2026-06-28",
+      "sha256": "8c68d14178e7ed3a2030033161940d87c1de239539301dc2d487659a13d9123b",
+      "text": "Stripe is available in 195 countries."
+    }
+  ]
+}
