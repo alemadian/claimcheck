@@ -1,0 +1,8 @@
+// KNOWN GAPS. These are claims the bundled deterministic reference reviewer
+// CANNOT catch, kept here on purpose to document the boundary of a lexical +
+// numeric first pass. They are NOT part of the green golden set. Run them with
+// `claimcheck run --data data/known_gaps` to watch the first-pass reviewer miss
+// them; a semantic model wired in behind the same ReviewerAdapter is what closes
+// the gap, and the harness would then score the upgrade on exactly these cases.
+{"id": "gap-guarantee-vs-historical-uptime", "split": "living", "claim": "Stripe guarantees 99.999% uptime.", "gold_verdict": "unsupported", "gold_doc_ids": [], "claim_type": "reliability", "adversarial": "near_miss", "notes": "the source states 99.999% AVERAGE HISTORICAL uptime, not a guarantee/SLA; the number matches, so the first-pass reviewer wrongly marks this SUPPORTED. A semantic reviewer must separate a historical stat from a forward guarantee."}
+{"id": "gap-negation-aes", "split": "living", "claim": "Stripe does not encrypt card numbers at rest.", "gold_verdict": "contradicted", "gold_doc_ids": ["d_aes"], "claim_type": "security", "notes": "direct negation of the source. Lexical overlap is high and there is no conflicting number, so the first-pass reviewer wrongly marks this SUPPORTED. Negation handling needs a model."}

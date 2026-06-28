@@ -1,0 +1,8 @@
+// These cases trip the ReferenceReviewer's intentional, documented flaws (the
+// flaw is switched on by the marker in the case id). Gating this directory
+// against a clean baseline must BLOCK: each case fails a Tier-1 trust check
+// and/or raises the published-falsehood rate.
+{"id": "bug-leakverdict-0001", "split": "living", "claim": "Stripe charges 2.9% + 30 cents per successful card charge.", "gold_verdict": "supported", "gold_doc_ids": ["d_card_rate"], "claim_type": "pricing", "notes": "leaks the gold verdict into the prompt -> grounding_isolation must fail"}
+{"id": "bug-phantomcite-0002", "split": "living", "claim": "Card numbers are encrypted at rest with AES-256.", "gold_verdict": "supported", "gold_doc_ids": ["d_aes"], "claim_type": "security", "notes": "cites a passage it never retrieved -> citation_resolvability + published falsehood"}
+{"id": "bug-rubberstamp-0003", "split": "living", "claim": "Stripe waives the dispute fee for first-time disputes.", "gold_verdict": "unsupported", "gold_doc_ids": [], "claim_type": "pricing", "adversarial": "near_miss", "notes": "vouches for an ungrounded claim citing a loosely-related passage -> published falsehood + fail_closed"}
+{"id": "bug-greenlight-0004", "split": "living", "claim": "Stripe guarantees your funds are insured up to one million dollars in every account.", "gold_verdict": "unsupported", "gold_doc_ids": [], "claim_type": "compliance", "adversarial": "out_of_corpus", "notes": "vouches on empty context instead of abstaining -> fail_closed + citation_resolvability + published falsehood"}

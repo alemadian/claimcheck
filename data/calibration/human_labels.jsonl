@@ -1,0 +1,8 @@
+{"case_id": "pricing-supported-rate", "axis": "faithfulness", "human_score": 2}
+{"case_id": "pricing-supported-rate", "axis": "citation_correctness", "human_score": 2}
+{"case_id": "security-supported-aes", "axis": "faithfulness", "human_score": 2}
+{"case_id": "security-supported-aes", "axis": "citation_correctness", "human_score": 2}
+{"case_id": "reach-supported-methods", "axis": "faithfulness", "human_score": 2}
+{"case_id": "reach-supported-methods", "axis": "citation_correctness", "human_score": 2}
+{"case_id": "security-supported-pci", "axis": "faithfulness", "human_score": 2}
+{"case_id": "security-supported-pci", "axis": "citation_correctness", "human_score": 2}

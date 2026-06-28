@@ -1,0 +1,42 @@
+# CI gate for the claims-review agent. Drop this in .github/workflows/.
+#
+# The deterministic trust checks run on every commit (free, sub-second). The
+# judge runs pre-merge. The gate compares the PR against the last green baseline
+# from main and blocks if the published-falsehood rate rises, if any trust check
+# fails, or if a previously-passing claim regresses.
+name: claims-review-gate
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e ".[dev]"
+
+      # Layer 1+2 unit tests (the trust checks, the gate logic, the judge).
+      - name: tests
+        run: pytest -q
+
+      # In real use, restore baseline.json produced on the last green main
+      # commit (cache or artifact). Here we generate it inline for the demo.
+      - name: baseline (restore from main in real use)
+        run: claimcheck baseline --out baseline.json
+
+      # The gate. Exits non-zero -> the PR is blocked. The markdown report is
+      # posted as a build artifact / PR comment.
+      - name: gate
+        run: claimcheck gate --baseline baseline.json --report gate.md
+
+      - name: upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gate-report
+          path: gate.md

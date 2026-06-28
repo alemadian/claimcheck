@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "claimcheck"
+version = "0.1.0"
+description = "A marketing claims-review agent with a cite-or-abstain trust layer, and the eval harness that scores it."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = []          # standard library only
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+claimcheck = "claimcheck.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["claimcheck*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
