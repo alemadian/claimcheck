@@ -1,0 +1,8 @@
+include README.md
+include LICENSE
+include pyproject.toml
+include ci-baseline.json
+recursive-include corpus *.jsonl *.json
+recursive-include data *.jsonl
+recursive-include examples *.py *.yml
+recursive-include assets *.png *.mmd

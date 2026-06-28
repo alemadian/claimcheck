@@ -47,6 +47,13 @@ DEFAULT_CALIB = str(_ROOT / "data" / "calibration" / "human_labels.jsonl")
 # Factory resolution                                                           #
 # --------------------------------------------------------------------------- #
 def _load_corpus(args) -> Corpus:
+    if not Path(args.corpus).exists():
+        raise SystemExit(
+            f"corpus not found at {args.corpus!r}. claimcheck ships its corpus and "
+            f"golden data in the repo, so run it from a clone (pip install -e "
+            f'".[dev]" inside content-review-poc), or pass --corpus PATH to your '
+            f"own source-of-truth jsonl."
+        )
     return Corpus.load(args.corpus)
 
 
