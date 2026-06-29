@@ -40,7 +40,7 @@ jobs:
       - name: the gate has teeth (it blocks a deliberately buggy reviewer)
         run: |
           claimcheck baseline --out /tmp/teeth-baseline.json
-          if claimcheck gate --data data/golden_buggy --baseline /tmp/teeth-baseline.json; then
+          if claimcheck gate --data data/golden_buggy --adapter claimcheck.buggy_adapter:make_adapter --baseline /tmp/teeth-baseline.json; then
             echo "ERROR: the gate should have blocked the buggy reviewer" && exit 1
           else
             echo "OK: the gate correctly blocked the buggy reviewer"

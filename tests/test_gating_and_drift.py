@@ -1,4 +1,5 @@
 from claimcheck.agent import ReferenceReviewer
+from claimcheck.buggy_adapter import BuggyReviewerAdapter
 from claimcheck.corpus import Corpus
 from claimcheck.dataset import load_dir
 from claimcheck.drift import detect_drift
@@ -9,10 +10,11 @@ from claimcheck.runner import run_suite
 from tests.conftest import BUGGY, CORPUS_PATH, GOLDEN
 
 
-def _scoreboard(data):
+def _scoreboard(data, buggy=False):
     corpus = Corpus.load(CORPUS_PATH)
     cases = load_dir(data)
-    results = run_suite(ReferenceReviewer(corpus), cases, corpus, judge=FakeJudgeClient())
+    adapter = BuggyReviewerAdapter(corpus) if buggy else ReferenceReviewer(corpus)
+    results = run_suite(adapter, cases, corpus, judge=FakeJudgeClient())
     return aggregate(results)
 
 
@@ -30,7 +32,7 @@ def test_gate_passes_against_itself():
 
 def test_gate_blocks_on_buggy_set():
     baseline = _scoreboard(GOLDEN).to_dict()
-    gate = evaluate_gate(_scoreboard(BUGGY), baseline)
+    gate = evaluate_gate(_scoreboard(BUGGY, buggy=True), baseline)
     assert not gate.passed
     assert any("published_falsehood_rate" in f.message for f in gate.findings)
     assert any("Tier 1" in f.message and f.severity == "block" for f in gate.findings)

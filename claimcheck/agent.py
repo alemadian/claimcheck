@@ -19,15 +19,6 @@ The discipline is *cite-or-abstain*: it never returns SUPPORTED without a
 citation to a retrieved passage, and it never invents a citation for a claim it
 could not ground.
 
-For the gate demo the reviewer also carries four *intentional, documented*
-flaws, switched on by a marker in the case id, so the harness has real failures
-to catch (mirroring the rest of the repo's "show the gate doing its job"):
-  - "leakverdict"  : leaks the gold verdict into the prompt (grounding leak).
-  - "phantomcite"  : cites a passage it never retrieved (unresolvable citation).
-  - "rubberstamp"  : marks an ungrounded claim SUPPORTED and cites a loosely
-                     related passage (a published falsehood).
-  - "greenlight"   : vouches for an out-of-corpus claim instead of abstaining
-                     (fails closed-open, with spend on empty context).
 """
 
 from __future__ import annotations
@@ -43,8 +34,6 @@ from .schema import Citation, ClaimCase, ReviewOutput, Verdict
 # overlap clears this. Below it (but above the retriever's floor) a passage is a
 # near-miss: on topic, but not grounds to vouch.
 SAME_SUBJECT = 0.5
-
-BUG_MARKERS = ("leakverdict", "phantomcite", "rubberstamp", "greenlight")
 
 
 # --------------------------------------------------------------------------- #
@@ -159,20 +148,19 @@ class ReferenceReviewer(ReviewerAdapter):
     # ----- public entry points -------------------------------------------- #
     def review(self, case: ClaimCase) -> ReviewOutput:
         """Review one golden case (the harness path)."""
-        bugs = {marker for marker in BUG_MARKERS if marker in case.id}
-        return self._review(case.claim, bugs=bugs, gold_verdict=case.gold_verdict)
+        return self._review(case.claim)
 
     def review_claim(self, claim: str) -> ReviewOutput:
         """Review a single free-text claim (the live `review` command path)."""
-        return self._review(claim, bugs=set(), gold_verdict=None)
+        return self._review(claim)
 
     # ----- the actual reviewer -------------------------------------------- #
-    def _review(self, claim: str, *, bugs: set[str], gold_verdict: Verdict | None) -> ReviewOutput:
+    def _review(self, claim: str) -> ReviewOutput:
         retrieved = self.retriever.retrieve(claim, self.corpus, self.k)
         retrieved_ids = [d.id for d in retrieved]
 
         # ---- fail closed before any spend when nothing is groundable ------ #
-        if not retrieved and "greenlight" not in bugs:
+        if not retrieved:
             return ReviewOutput(
                 verdict=Verdict.UNSUPPORTED,
                 citations=[],
@@ -190,35 +178,10 @@ class ReferenceReviewer(ReviewerAdapter):
             "the CLAIM. Cite only the passages you used.\n\n"
             f"SOURCES:\n{context_block}\n\nCLAIM: {claim}\n"
         )
-        if "leakverdict" in bugs and gold_verdict is not None:
-            # BUG: smuggles the answer into the prompt.
-            prompt += f"\n(reviewer hint: the correct verdict is {gold_verdict.value})"
-
-        # ---- the "greenlight" bug: vouch on empty context ------------------ #
-        if "greenlight" in bugs and not retrieved:
-            best = max(self.corpus.docs, key=lambda d: (overlap_score(claim, d.text), d.id))
-            return ReviewOutput(
-                verdict=Verdict.SUPPORTED,
-                citations=[Citation(doc_id=best.id, span=best.text)],
-                retrieved_ids=[],          # nothing was actually retrieved
-                abstained=False,
-                model_was_called=True,     # spent on empty context
-                prompt_to_model=prompt,
-                rationale="(buggy) vouched without grounding.",
-            )
 
         # ---- decide the verdict from the on-subject passages -------------- #
         subject_docs = [d for d in retrieved if overlap_score(claim, d.text) >= SAME_SUBJECT]
         verdict, cited, rationale = self._decide(claim, subject_docs, retrieved)
-
-        # ---- injected flaws for the gate demo ----------------------------- #
-        if "rubberstamp" in bugs:
-            top = retrieved[0]
-            verdict = Verdict.SUPPORTED
-            cited = [Citation(doc_id=top.id, span=top.text)]
-            rationale = "(buggy) rubber-stamped against a loosely related passage."
-        if "phantomcite" in bugs:
-            cited = list(cited) + [Citation(doc_id="__phantom__", span="not retrieved")]
 
         return ReviewOutput(
             verdict=verdict,

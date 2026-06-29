@@ -11,9 +11,9 @@ public source-of-truth documents (here: Stripe pricing and security docs), and
 for every claim it returns one of three verdicts with a citation to the exact
 passage it relied on:
 
-- **SUPPORTED** the source backs the claim. Cite the passage.
-- **CONTRADICTED** the source conflicts with the claim. Cite the passage.
-- **UNSUPPORTED** nothing in the source grounds the claim, so the agent abstains
+- **SUPPORTED:** the source backs the claim. Cite the passage.
+- **CONTRADICTED:** the source conflicts with the claim. Cite the passage.
+- **UNSUPPORTED:** nothing in the source grounds the claim, so the agent abstains
   and flags it for a human instead of vouching for it.
 
 A piece of copy is only cleared to publish when every claim is SUPPORTED.
@@ -46,7 +46,7 @@ Reviewing 4 claim(s) against 15 source passages (corpus: stripe_docs.jsonl)
         source : [d_countries] https://stripe.com/en-ca/pricing (captured 2026-06-28)
 
 [!! ] claim 3: The rate for a successful card charge is just 1.9%.
-        verdict: CONTRADICTED - The source states a different pct value than the claim.
+        verdict: CONTRADICTED - The source states a different percentage value than the claim.
         source : [d_card_rate] https://stripe.com/en-ca/pricing (captured 2026-06-28)
                  "For online domestic card payments, Stripe charges 2.9% + CA$0.30 per successful card charge."
 
@@ -90,7 +90,8 @@ same interfaces without touching the harness.
 ## Quickstart
 
 ```bash
-cd content-review-poc
+git clone https://github.com/alemadian/claimcheck.git
+cd claimcheck
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 
@@ -104,7 +105,7 @@ claimcheck run
 claimcheck baseline --out baseline.json
 
 # 4) gate a buggy reviewer against that baseline; it BLOCKS and exits non-zero
-claimcheck gate --data data/golden_buggy --baseline baseline.json ; echo $?   # -> 1
+claimcheck gate --data data/golden_buggy --adapter claimcheck.buggy_adapter:make_adapter --baseline baseline.json; echo $?   # -> 1
 
 # 5) judge-vs-human calibration
 claimcheck calibrate
@@ -138,17 +139,17 @@ The deterministic layer runs on every commit with no judge (`claimcheck run --no
      there was no context at all it did not spend a model call.
 
 2. **Retrieval evaluation** (`claimcheck/retrieval.py`): recall@k, precision@k,
-   MRR and nDCG against the gold passages, isolated from the verdict step so a
+   MRR, and nDCG against the gold passages, isolated from the verdict step so a
    regression points at the right layer.
 
 3. **Model-as-judge** (`claimcheck/judges/`), versioned rubric, run in CI and
    on a nightly schedule: faithfulness (is the claim entailed by the cited passage) and
    citation correctness (does the cited passage actually bear on this specific
-   claim, beating the hardest decoy passage). The judge model id, temperature,
+   claim, beating the hardest decoy passage). The judge model ID, temperature,
    seed and prompt version are pinned and recorded in every verdict.
 
-On top of those, the headline metric is **published_falsehood_rate**: of every
-claim the reviewer marked SUPPORTED, the fraction the source does not actually
+On top of those, the headline metric is **published_falsehood_rate**: among
+claims the reviewer marked SUPPORTED, the fraction the source does not actually
 support. A trustworthy reviewer keeps it at zero. It is reported next to
 **over_flag_rate**, the productivity tax of flagging good copy, so both failure
 directions are visible at once. Verdict accuracy, contradiction recall (did it
@@ -186,16 +187,17 @@ interface and measured the same way. Reproduce with `claimcheck run`.
 ## The corpus is real and pinned
 
 `corpus/stripe_docs.jsonl` is real, public Stripe content (Canada pricing and
-the security docs), captured 2026-06-28. Every passage records the URL it came
-from and the date it was captured, so anyone can re-verify it and a change to
-the source of truth is a visible, reviewable diff. Nothing in the corpus is
-invented, and `corpus/manifest.json` pins each passage's source URL, capture
-date, and the SHA-256 of its stored text, so every passage is traceable to its
-source and any change to the corpus is a reviewable diff. The stored passages are
+Stripe security docs), captured 2026-06-28. Nothing in the corpus is invented,
+and `corpus/manifest.json` pins each passage's source URL, capture date, and the
+SHA-256 of its stored text, so every passage is traceable to its source and any
+source update becomes a visible, reviewable diff. The stored passages are
 faithful statements of what each page asserts, lightly normalized rather than
 always verbatim.
 
-It is deliberately a small curated excerpt, not all of Stripe. The tool checks a
+Stripe docs, product names, and trademarks remain Stripe's property; the excerpts
+here are included only as a small public-source corpus for the review demo.
+
+It is deliberately a small curated excerpt, not all Stripe docs. The tool checks a
 claim against this pinned snapshot, which is the point: you pin your source of
 truth and review against it. So the demo's UNSUPPORTED examples are genuine
 overclaims or unpublished specifics (a 99.999% uptime guarantee, a made-up
@@ -248,8 +250,9 @@ gold supporting passage ids, a claim type for slicing, and an adversarial tag.
 
 Two splits matter: **frozen** never changes and is the drift baseline; **living**
 grows by one permanent regression case every time a real production miss
-surfaces. `data/golden_buggy/` ships claims that trip the reference reviewer's
-documented flaws so the gate has real failures to catch.
+surfaces. `data/golden_buggy/` ships claims that trip the deliberately buggy adapter,
+so the gate has real failures to catch without putting test-specific behavior
+inside the reference reviewer.
 
 ## Layout
 
@@ -258,6 +261,7 @@ claimcheck/
   schema.py        dataclasses + strict loaders for cases and reviewer output
   corpus.py        the pinned source-of-truth corpus + the retriever
   agent.py         ReviewerAdapter + the reference reviewer + claim splitting
+  buggy_adapter.py deliberately flawed adapter used only to prove the gate blocks
   deterministic.py layer 1 trust checks (no model)
   retrieval.py     layer 2 recall@k / MRR / nDCG
   judges/
@@ -297,8 +301,8 @@ tests/             pytest suite covering every layer
 - The retriever is lexical with a relevance floor. The point of this repo is the
   trust layer and the evaluation, not a novel retriever; an embedding retriever
   drops in behind the same interface.
-- The bundled reference reviewer is a deterministic FIRST PASS, not a semantic
-  claim checker. It is lexical retrieval plus number and unit comparison, so it
+- The bundled reference reviewer is a deterministic first pass, not a semantic
+  claim checker. It is lexical retrieval plus number-and-unit comparison, so it
   is strong exactly where the money is (a confidently wrong price, fee, or
   encryption level) and weak on what lexical matching cannot see: negation, a
   false clause smuggled in next to a true one, and relationship or causal errors.

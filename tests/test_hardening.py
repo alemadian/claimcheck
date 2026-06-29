@@ -2,6 +2,7 @@
 import json
 
 from claimcheck.agent import ReferenceReviewer
+from claimcheck.buggy_adapter import BuggyReviewerAdapter
 from claimcheck.cli import _baseline_not_green
 from claimcheck.corpus import Corpus
 from claimcheck.dataset import load_dir
@@ -20,16 +21,17 @@ def _case(verdict="supported", gold=("d_card_rate",), cid="h"):
                                 "gold_verdict": verdict, "gold_doc_ids": list(gold)})
 
 
-def _sb(data, judge=True):
+def _sb(data, judge=True, buggy=False):
     corpus = Corpus.load(CORPUS_PATH)
     cases = load_dir(data)
     j = FakeJudgeClient() if judge else None
-    return aggregate(run_suite(ReferenceReviewer(corpus), cases, corpus, judge=j))
+    adapter = BuggyReviewerAdapter(corpus) if buggy else ReferenceReviewer(corpus)
+    return aggregate(run_suite(adapter, cases, corpus, judge=j))
 
 
 def test_phantom_cite_counts_as_published_falsehood():
     # a SUPPORTED verdict with a broken citation must NOT keep the headline at 0.
-    falsehoods = [c["id"] for c in _sb(BUGGY).per_case if c["published_falsehood"]]
+    falsehoods = [c["id"] for c in _sb(BUGGY, buggy=True).per_case if c["published_falsehood"]]
     assert "bug-phantomcite-0002" in falsehoods
 
 
